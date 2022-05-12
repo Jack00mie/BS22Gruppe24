@@ -13,26 +13,19 @@
 #include <netinet/in.h>
 #include <string.h>
 #include "sub.h"
+#include <unistd.h>
 
 #define BUFSIZE 1024 // Größe des Buffers
 #define TRUE 1
 #define ENDLOSSCHLEIFE 1
 #define PORT 5678
 
-int putGetDel(char *command, char *c) {
-    int i = 0;
-
-    while(command[i] != '\0') {
-        c[i] = command[i];
-    }
-}
-
 
 
 int main() {
-
     int rfd; // Rendevouz-Descriptor
     int cfd; // Verbindungs-Descriptor
+
 
     struct sockaddr_in client; // Socketadresse eines Clients
     socklen_t client_len; // Länge der Client-Daten
@@ -72,22 +65,26 @@ int main() {
         exit(-1);
     }
 
-    while (ENDLOSSCHLEIFE) {
+
+    int quit = 0;
+    int pid = 100;
+    while (pid > 0){
+        pid = fork();
+    }
+
+    while (quit == 0) {
 
         // Verbindung eines Clients wird entgegengenommen
         cfd = accept(rfd, (struct sockaddr *) &client, &client_len);
 
-        // Lesen von Daten, die der Client schickt
-        bytes_read = read(cfd, in, BUFSIZE);
-
 
         // Zurückschicken der Daten, solange der Client welche schickt (und kein Fehler passiert)
-        while (bytes_read > 0) {
-            executeCommand(in, cfd);
-            //printf("sending back the %d bytes I received...\n", bytes_read);
-
+        while (quit == 0) {
             bytes_read = read(cfd, in, BUFSIZE);
-
+            if(bytes_read <= 0) {
+                break;
+            }
+            quit = executeCommand(in, cfd);
         }
         close(cfd);
     }

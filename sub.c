@@ -25,9 +25,10 @@ int cleanString(char *string1) {
 
 
 int executeCommand(const char *commandAndInput, int socket) {
-    char *get1 = "GET";
-    char *put1 = "PUT";
-    char *del1 = "DEL";
+    char get1[3] = "GET";
+    char put1[3] = "PUT";
+    char del1[3] = "DEL";
+    char quit[4] = "QUIT";
 
     char *command;
     char *key;
@@ -48,8 +49,8 @@ int executeCommand(const char *commandAndInput, int socket) {
 
 
     command = strtok(input, "\r\n ");
-    key = strtok(NULL, " ");
-    value = strtok(NULL, " ");
+    key = strtok(NULL, "\r\n ");
+    value = strtok(NULL, "\r\n ");
 
 
     if (strncmp(command, get1, 3) == 0) {
@@ -74,9 +75,13 @@ int executeCommand(const char *commandAndInput, int socket) {
         if(success == 0) write(socket, "Deleted\n", strlen("Deleted\n"));
         if(success == -1) write(socket, "Key not found.\n", strlen("Key not found.\n"));
     }
+    else if(strncmp(command, quit, 4) == 0) {
+        return 1;
+    }
     else {
         char *noValidCommand = "No vaild command.\n";
         write(socket, noValidCommand, strlen(noValidCommand));
     }
     free(input);
+    return 0;
 }
