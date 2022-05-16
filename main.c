@@ -14,6 +14,8 @@
 #include <string.h>
 #include "sub.h"
 #include <unistd.h>
+#include <arpa/inet.h>
+#include "keyValStore.h"
 
 #define BUFSIZE 1024 // Größe des Buffers
 #define TRUE 1
@@ -26,11 +28,13 @@ int main() {
     int rfd; // Rendevouz-Descriptor
     int cfd; // Verbindungs-Descriptor
 
+    int pid; // ProzessID
+
 
     struct sockaddr_in client; // Socketadresse eines Clients
     socklen_t client_len; // Länge der Client-Daten
     char in[BUFSIZE]; // Daten vom Client an den Server
-    int bytes_read; // Anzahl der Bytes, die der Client geschickt hat
+    int bytes_read = 1; // Anzahl der Bytes, die der Client geschickt hat
 
 
     // Socket erstellen
@@ -65,33 +69,36 @@ int main() {
         exit(-1);
     }
 
-
+    int clientsConnected = 0;
     int quit = 0;
-    int pid = 100;
-    while (pid > 0){
-        pid = fork();
-    }
+    while(ENDLOSSCHLEIFE) {
+        // Neuer Verbindungs-Descriptor
+        cfd = accept(rfd, (struct sockaddr *)&client, &client_len);
 
-    while (quit == 0) {
-
-        // Verbindung eines Clients wird entgegengenommen
-        cfd = accept(rfd, (struct sockaddr *) &client, &client_len);
-
-
-        // Zurückschicken der Daten, solange der Client welche schickt (und kein Fehler passiert)
-        while (quit == 0) {
-            bytes_read = read(cfd, in, BUFSIZE);
-            if(bytes_read <= 0) {
-                break;
-            }
-            quit = executeCommand(in, cfd);
+        if(cfd < 0) {
+            exit(-1);
         }
+
+        printf("Neue Verbindung von IP Adresse: %s : %d\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+
+        printf("Verbundene Clients: %d\n\n", ++clientsConnected);
+
+        if((pid = fork()) == 0) { // Neuer Child-Prozess
+
+            close(rfd);
+
+            while(quit == 0) {
+                read(cfd, in, BUFSIZE);
+                quit = executeCommand(in, cfd);
+            }
+            close(cfd);
+            exit(0);
+        }
+
         close(cfd);
     }
 
-    // Rendevouz Descriptor schließen
-    close(rfd);
-
+    return 0;
 }
 
 
