@@ -65,18 +65,10 @@ int main() {
         exit(-1);
     }
 
-    /**
-    int id;
+    //Shared Memory wird in keyValStore angelegt
+    initializeKeyValShM();
 
-    struct KeyVal * keyVal;
 
-    id = shmget(IPC_PRIVATE, sizeof(KeyVal) * 500, IPC_CREAT|0777); // 0600 // 0666
-    printf("%d\n", id);
-    keyVal= (struct KeyVal *) shmat(id, 0, 0);
-
-    setKeyVal(keyVal);
-    */
-    initializeKeyValSM();
     int clientsConnected = 0;
     int quit = 0;
     while(ENDLOSSCHLEIFE) {
@@ -92,6 +84,7 @@ int main() {
         printf("Verbundene Clients: %d\n\n", ++clientsConnected);
 
         if((pid = fork()) == 0) { // Neuer Child-Prozess
+            printf("Neuer Prozess wurde erstellt\n");
 
             close(rfd);
 
@@ -100,6 +93,7 @@ int main() {
                 quit = executeCommand(in, cfd);
             }
             close(cfd);
+            dtKeyValShM();
             exit(0);
         }
 

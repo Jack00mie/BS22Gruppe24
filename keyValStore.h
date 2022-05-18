@@ -3,21 +3,18 @@
 //
 
 #ifndef UNTITLED_KEYVALSTORE_H
+
+
+#define UNTITLED_KEYVALSTORE_H
+
 int put(char *key, char *value);
 
 int get(char *key, char *res);
 
 int del(char *key);
 
-#define UNTITLED_KEYVALSTORE_H
+int initializeKeyValShM();
 
-typedef struct KeyVal {
-    char key[100];
-    char value[100];
-} KeyVal;
-
-int setKeyVal(struct KeyVal * keyVal1);
-
-int initializeKeyValSM();
+int dtKeyValShM();
 
 #endif //UNTITLED_KEYVALSTORE_H

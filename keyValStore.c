@@ -9,13 +9,18 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-#define SIZE 100
+#define SIZE 500 //Größe des KeyVal Arrays
 
-
+typedef struct KeyVal {
+    char key[100];
+    char value[100];
+} KeyVal;
 
 struct KeyVal * keyVal;
 
 int * i;
+int idKV;
+int idi;
 
 int put(char *key, char *value) {
     strcpy(keyVal[*i].key, key);
@@ -52,31 +57,26 @@ int del(char *key) {
     return -1;
 }
 
-int setKeyVal(struct KeyVal * keyVal1) {
-    keyVal = keyVal1;
-}
 
-/**
-int sizeOfKeyVal() {
-    id = shmget(IPC_PRIVATE, sizeof(KeyVal) * SIZE, IPC_CREAT);
-    printf("%d\n", id);
-    keyVal = (struct KeyVal *) shmat(id, 0, 0);
-    return sizeof(KeyVal);
-}
-*/
-
-int initializeKeyValSM() {
-    int idKV;
-    int idi;
-
-    idKV = shmget(IPC_PRIVATE, sizeof(KeyVal) * 500, IPC_CREAT|0777); // 0600 // 0666
-    printf("%d\n", idKV);
+int initializeKeyValShM() {
+    idKV = shmget(IPC_PRIVATE, sizeof(KeyVal) * SIZE, IPC_CREAT|0777); // 0600 // 0666
+    printf("Shared Memory mit id: %d wurde erstellt\n", idKV);
     keyVal = (struct KeyVal *) shmat(idKV, 0, 0);
 
     idi = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT|0777); // 0600 // 0666
-    printf("%d\n", idi);
+    printf("Shared Memory mit id: %d wurde erstellt\n", idi);
     i = (int *) shmat(idi, 0, 0);
 
     *i = 0;
+}
+
+int dtKeyValShM() {
+    shmdt(i);
+    shmdt(keyVal);
+}
+
+int rmKeyValShM() {
+    shmctl(idi, IPC_RMID, 0);
+    shmctl(idKV, IPC_RMID, 0);
 }
 
