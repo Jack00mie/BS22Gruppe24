@@ -2,17 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <string.h>
 #include "sub.h"
-#include <unistd.h>
 #include <arpa/inet.h>
 #include "keyValStore.h"
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 
 #define BUFSIZE 1024 // Größe des Buffers
 #define TRUE 1
