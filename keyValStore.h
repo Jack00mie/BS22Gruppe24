@@ -18,4 +18,6 @@ typedef struct KeyVal {
 
 int setKeyVal(struct KeyVal * keyVal1);
 
+int initializeKeyValSM();
+
 #endif //UNTITLED_KEYVALSTORE_H

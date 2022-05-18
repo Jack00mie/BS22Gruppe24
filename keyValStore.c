@@ -15,19 +15,19 @@
 
 struct KeyVal * keyVal;
 
-int i = 0;
+int * i;
 
 int put(char *key, char *value) {
-    strcpy(keyVal[i].key, key);
-    strcpy(keyVal[i].value, value);
-    printf("%s\n",keyVal[i].key);
-    printf("%s\n",keyVal[i].value);
-    i++;
+    strcpy(keyVal[*i].key, key);
+    strcpy(keyVal[*i].value, value);
+    printf("%s\n",keyVal[*i].key);
+    printf("%s\n",keyVal[*i].value);
+    *i += 1;
     return 0;
 }
 
 int get(char *key, char *value) {
-    for(int j = 0; j < i; j++) {
+    for(int j = 0; j < *i; j++) {
         if(strcmp(keyVal[j].key, key) == 0) {
             strcpy(value, keyVal[j].value);
             return 0;
@@ -38,13 +38,13 @@ int get(char *key, char *value) {
 }
 
 int del(char *key) {
-    for(int j = 0; j < i; j++) {
+    for(int j = 0; j < *i; j++) {
         if(strcmp(keyVal[j].key, key) == 0) {
-            for(int k = j; k < i - 1; k++) {
+            for(int k = j; k < *i - 1; k++) {
                 strcpy(keyVal[k].key, keyVal[k + 1].key);
                 strcpy(keyVal[k].value, keyVal[k + 1].value);
             }
-            i--;
+            *i -= 1;
             return 0;
         }
     }
@@ -64,4 +64,19 @@ int sizeOfKeyVal() {
     return sizeof(KeyVal);
 }
 */
+
+int initializeKeyValSM() {
+    int idKV;
+    int idi;
+
+    idKV = shmget(IPC_PRIVATE, sizeof(KeyVal) * 500, IPC_CREAT|0777); // 0600 // 0666
+    printf("%d\n", idKV);
+    keyVal = (struct KeyVal *) shmat(idKV, 0, 0);
+
+    idi = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT|0777); // 0600 // 0666
+    printf("%d\n", idi);
+    i = (int *) shmat(idi, 0, 0);
+
+    *i = 0;
+}
 

@@ -65,7 +65,7 @@ int main() {
         exit(-1);
     }
 
-
+    /**
     int id;
 
     struct KeyVal * keyVal;
@@ -75,7 +75,8 @@ int main() {
     keyVal= (struct KeyVal *) shmat(id, 0, 0);
 
     setKeyVal(keyVal);
-
+    */
+    initializeKeyValSM();
     int clientsConnected = 0;
     int quit = 0;
     while(ENDLOSSCHLEIFE) {
