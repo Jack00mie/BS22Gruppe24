@@ -5,13 +5,16 @@
 #include "keyValStore.h"
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
-typedef struct KeyVal {
-    char key[100];
-    char value[100];
-} KeyVal;
+#define SIZE 100
 
-struct KeyVal keyVal[500];
+
+
+struct KeyVal * keyVal;
+
 int i = 0;
 
 int put(char *key, char *value) {
@@ -30,7 +33,7 @@ int get(char *key, char *value) {
             return 0;
         }
     }
-    printf("Key not found.");
+    printf("Key not found.\n");
     return -1;
 }
 
@@ -45,7 +48,20 @@ int del(char *key) {
             return 0;
         }
     }
-    printf("Key not found.");
+    printf("Key not found.\n");
     return -1;
 }
-#include "keyValStore.h"
+
+int setKeyVal(struct KeyVal * keyVal1) {
+    keyVal = keyVal1;
+}
+
+/**
+int sizeOfKeyVal() {
+    id = shmget(IPC_PRIVATE, sizeof(KeyVal) * SIZE, IPC_CREAT);
+    printf("%d\n", id);
+    keyVal = (struct KeyVal *) shmat(id, 0, 0);
+    return sizeof(KeyVal);
+}
+*/
+

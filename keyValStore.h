@@ -8,7 +8,14 @@ int put(char *key, char *value);
 int get(char *key, char *res);
 
 int del(char *key);
+
 #define UNTITLED_KEYVALSTORE_H
 
+typedef struct KeyVal {
+    char key[100];
+    char value[100];
+} KeyVal;
+
+int setKeyVal(struct KeyVal * keyVal1);
 
 #endif //UNTITLED_KEYVALSTORE_H

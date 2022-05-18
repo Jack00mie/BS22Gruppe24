@@ -1,9 +1,3 @@
-/*******************************************************************************
-
-  Ein TCP-Echo-Server als iterativer Server: Der Server schickt einfach die
-  Daten, die der Client schickt, an den Client zurück.
-
-*******************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +10,9 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include "keyValStore.h"
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #define BUFSIZE 1024 // Größe des Buffers
 #define TRUE 1
@@ -61,13 +58,23 @@ int main() {
         exit(-1);
     }
 
-
     // Socket lauschen lassen
     int lrt = listen(rfd, 5);
     if (lrt < 0 ){
         fprintf(stderr, "socket konnte nicht listen gesetzt werden\n");
         exit(-1);
     }
+
+
+    int id;
+
+    struct KeyVal * keyVal;
+
+    id = shmget(IPC_PRIVATE, sizeof(KeyVal) * 500, IPC_CREAT|0777); // 0600 // 0666
+    printf("%d\n", id);
+    keyVal= (struct KeyVal *) shmat(id, 0, 0);
+
+    setKeyVal(keyVal);
 
     int clientsConnected = 0;
     int quit = 0;
